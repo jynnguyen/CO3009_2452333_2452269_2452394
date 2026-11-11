@@ -49,3 +49,37 @@ static uint32_t Insert(const sTask* newTask)
 	SCH_Unlock(m);
 	return t->TaskID;
 }
+
+void SCH_Init(void)
+{
+	SCH_count = 0;
+}
+
+void SCH_Update(void)
+{
+	if (SCH_count == 0)
+		return;
+
+	if (SCH_tasks_G[0].Delay > 0)
+		SCH_tasks_G[0].Delay--;
+
+	if (SCH_tasks_G[0].Delay == 0)
+		SCH_tasks_G[0].RunMe = 1;
+}
+
+void SCH_Dispatch_Tasks(void)
+{
+	while (SCH_count > 0 && SCH_tasks_G[0].RunMe)
+	{
+		sTask dpTask =  SCH_tasks_G[0];
+		dpTask.pTask();
+
+		if(SCH_Delete_Task(dpTask.TaskID) && dpTask.Period > 0)
+		{
+			dpTask.Delay = dpTask.Period;
+			dpTask.RunMe = 0;
+			Insert(&dpTask);
+		}
+	}
+}
+
