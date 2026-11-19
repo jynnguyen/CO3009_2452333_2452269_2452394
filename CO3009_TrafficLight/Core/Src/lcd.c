@@ -97,8 +97,8 @@ static const char* color_to_str(LightColor c)
 void lcd_display_task(void)
 {
     if (!is_lcd_connected) return;
-    char line1[17];
-    char line2[17];
+    char line1[20];
+    char line2[20];
     switch (system_mode)
     {
         case MODE_AUTO:
@@ -117,7 +117,7 @@ void lcd_display_task(void)
 			}
             else
             {
-            	snprintf(line2, sizeof(line2), "--.-C --%%  [AUTO]");
+            	snprintf(line2, sizeof(line2), "--.-C --%% [AUTO]");
             }
             break;
         case MODE_MANUAL:
