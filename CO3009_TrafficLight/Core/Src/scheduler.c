@@ -6,7 +6,7 @@
  */
 
 // Scheduler O(1)
-#include "main.h"
+
 #include "scheduler.h"
 #include "sch_port.h"
 
@@ -83,3 +83,44 @@ void SCH_Dispatch_Tasks(void)
 	}
 }
 
+uint32_t SCH_Add_Task(void (*pFunction)(void), uint32_t DELAY, uint32_t PERIOD)
+{
+	if(pFunction == 0 || SCH_count >= SCH_MAX_TASKS)
+		return NO_TASK_ID;
+
+	sTask newTask = {pFunction, DELAY, PERIOD, 0, task_id};
+	task_id++;
+
+	return Insert(&newTask);
+}
+
+uint8_t SCH_Delete_Task(uint32_t taskID)
+{
+	uint32_t m = SCH_Lock();
+
+	uint8_t currID;
+	for(currID = 0; currID < SCH_count; currID++)
+	{
+		if(SCH_tasks_G[currID].TaskID == taskID)
+			break;
+	}
+
+	if(currID == SCH_count)
+	{
+		SCH_Unlock(m);
+		return 0;
+	}
+
+	if (currID + 1 < SCH_count)
+	{
+		SCH_tasks_G[currID + 1].Delay += SCH_tasks_G[currID].Delay;
+		SCH_tasks_G[currID + 1].RunMe = (currID == 0 && SCH_tasks_G[currID + 1].Delay == 0);
+	}
+
+	for(uint8_t j = currID; j < SCH_count - 1; j++)
+		SCH_tasks_G[j] = SCH_tasks_G[j+1];
+
+	SCH_count--;
+	SCH_Unlock(m);
+	return 1;
+}
