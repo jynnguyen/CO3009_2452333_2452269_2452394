@@ -11,16 +11,6 @@
 #include "main.h"
 #include "global.h"
 
-#define ROAD_1          1
-#define ROAD_2          2
-
-void traffic_init(void);
-
-void traffic_set(uint8_t road, LightColor color);
-
-void traffic_toggle(uint8_t road, LightColor color);
-
-void traffic_off_all(void);
 
 void traffic_init();
 void traffic_set(uint8_t roadNum, LightState color);

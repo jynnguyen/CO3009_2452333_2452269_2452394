@@ -4,19 +4,6 @@
  *  Created on: Nov 4, 2026
  *      Author: Admin
  */
-#include "button.h"
-static GPIO_TypeDef* const buttonPorts[BUTTON_COUNT] = {
-    BTN_1_GPIO_Port,
-    BTN_2_GPIO_Port,
-    BTN_3_GPIO_Port,
-    BTN_4_GPIO_Port
-};
-static const uint16_t buttonPins[BUTTON_COUNT] = {
-    BTN_1_Pin,
-    BTN_2_Pin,
-    BTN_3_Pin,
-    BTN_4_Pin
-};
 
 #include "button.h"
 
