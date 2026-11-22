@@ -18,72 +18,97 @@ static const uint16_t buttonPins[BUTTON_COUNT] = {
     BTN_4_Pin
 };
 
-static GPIO_PinState debounceBuffer0[BUTTON_COUNT];
-static GPIO_PinState debounceBuffer1[BUTTON_COUNT];
-static GPIO_PinState debounceBuffer2[BUTTON_COUNT];
+#include "button.h"
 
-static GPIO_PinState buttonState[BUTTON_COUNT];
+#define BUTTON_PRESSED  GPIO_PIN_RESET
+#define BUTTON_RELEASED GPIO_PIN_SET
 
-static volatile uint8_t flagForButtonPress[BUTTON_COUNT] = {0};
-static volatile uint8_t flagForButtonPress1s[BUTTON_COUNT] = {0};
+static GPIO_TypeDef* btn_ports[BUTTONS_COUNT] = {BTN_1_GPIO_Port, BTN_2_GPIO_Port, BTN_3_GPIO_Port, BTN_4_GPIO_Port};
+static uint16_t btn_pins[BUTTONS_COUNT] = {BTN_1_Pin, BTN_2_Pin, BTN_3_Pin, BTN_4_Pin};
 
-static uint16_t pressCounter[BUTTON_COUNT] = {0};
-void button_read(void)
+static GPIO_PinState btn_reg0[BUTTONS_COUNT];
+static GPIO_PinState btn_reg1[BUTTONS_COUNT];
+static GPIO_PinState btn_reg2[BUTTONS_COUNT];
+static GPIO_PinState btn_reg3[BUTTONS_COUNT];
+
+static uint8_t btn_pressed_flag[BUTTONS_COUNT] = {};
+static uint8_t btn_held_flag[BUTTONS_COUNT] = {};
+static uint16_t btn_held_time[BUTTONS_COUNT] = {};
+
+static void button_update_reg(uint8_t btnId)
 {
-    for (uint8_t i = 0; i < BUTTON_COUNT; i++)
-    {
-
-    	debounceBuffer2[i] = debounceBuffer1[i];
-        debounceBuffer1[i] = debounceBuffer0[i];
-        debounceBuffer0[i] = HAL_GPIO_ReadPin(buttonPorts[i], buttonPins[i]);
-
-        if ((debounceBuffer0[i] == debounceBuffer1[i]) && (debounceBuffer1[i] == debounceBuffer2[i]))
-        {
-
-        	if (buttonState[i] == BUTTON_IS_RELEASED && debounceBuffer0[i] == BUTTON_IS_PRESSED)
-            {
-                flagForButtonPress[i] = 1;
-                pressCounter[i] = 0;
-            }
-            buttonState[i] = debounceBuffer0[i];
-            if (buttonState[i] == BUTTON_IS_PRESSED)
-            {
-                if (pressCounter[i] < DURATION_FOR_AUTO_INCREASING)
-                {
-                    pressCounter[i]++;
-                }
-                else
-                {
-                    flagForButtonPress1s[i] = 1;
-                    pressCounter[i] = DURATION_FOR_AUTO_INCREASING - SPEED_FOR_INCREASING;
-                }
-            }
-            else
-            {
-                pressCounter[i] = 0;
-                flagForButtonPress1s[i] = 0;
-            }
-        }
-    }
-}
-uint8_t isButtonPressed(uint8_t index)
-{
-    if (index >= BUTTON_COUNT) return 0;
-    if (flagForButtonPress[index] == 1)
-    {
-        flagForButtonPress[index] = 0;
-        return 1;
-    }
-    return 0;
-}
-uint8_t isButtonPressed1s(uint8_t index)
-{
-    if (index >= BUTTON_COUNT) return 0;
-    if (flagForButtonPress1s[index] == 1)
-    {
-        flagForButtonPress1s[index] = 0;
-        return 1;
-    }
-    return 0;
+	btn_reg0[btnId] = btn_reg1[btnId];
+	btn_reg1[btnId] = btn_reg2[btnId];
+	btn_reg2[btnId] = HAL_GPIO_ReadPin(btn_ports[btnId], btn_pins[btnId]);
 }
 
+void button_init()
+{
+	 for (uint8_t i = 0; i < BUTTONS_COUNT; i++)
+	 {
+		 btn_reg0[i] = BUTTON_RELEASED;
+		 btn_reg1[i] = BUTTON_RELEASED;
+		 btn_reg2[i] = BUTTON_RELEASED;
+		 btn_reg3[i] = BUTTON_RELEASED;
+		 btn_pressed_flag[i] = 0;
+		 btn_held_flag[i] = 0;
+		 btn_held_time[i] = 0;
+	}
+}
+
+void button_read()
+{
+	for(uint8_t i = 0;i < BUTTONS_COUNT; i++)
+	{
+		button_update_reg(i);
+
+		if(btn_reg0[i] == btn_reg1[i] && btn_reg1[i] == btn_reg2[i])
+		{
+			if(btn_reg2[i] != btn_reg3[i])
+			{
+				btn_reg3[i] = btn_reg2[i];
+				if (btn_reg3[i] == BUTTON_PRESSED)
+				{
+					btn_pressed_flag[i] = 1;
+					btn_held_time[i] = 0;
+				}
+			}
+
+			else if(btn_reg3[i] == BUTTON_PRESSED)
+			{
+				btn_held_time[i]++;
+				if(btn_held_time[i] >= 100)
+				{
+					btn_held_flag[i] = 1;
+					btn_held_time[i] -= 50;
+				}
+			}
+		}
+	}
+}
+
+uint8_t button_is_pressed(uint8_t btnId)
+{
+	if (btnId >= BUTTONS_COUNT)
+		return 0;
+	if (btn_pressed_flag[btnId] == 1)
+	{
+		btn_pressed_flag[btnId] = 0;
+		return 1;
+	}
+
+	return 0;
+}
+
+uint8_t button_is_held(uint8_t btnId)
+{
+	if (btnId >= BUTTONS_COUNT)
+			return 0;
+	if (btn_held_flag[btnId] == 1)
+	{
+		btn_held_flag[btnId] = 0;
+		return 1;
+	}
+
+	return 0;
+}

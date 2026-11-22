@@ -22,4 +22,7 @@ void traffic_toggle(uint8_t road, LightColor color);
 
 void traffic_off_all(void);
 
+void traffic_init();
+void traffic_set(uint8_t roadNum, LightState color);
+
 #endif /* INC_TRAFFIC_LIGHT_H_ */
