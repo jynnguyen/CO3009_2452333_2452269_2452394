@@ -4,7 +4,6 @@
  *  Created on: Nov 4, 2026
  *      Author: Admin
  */
-
 #include "traffic_light.h"
 
 static void traffic_write(uint8_t roadNum, uint8_t signalAB)
