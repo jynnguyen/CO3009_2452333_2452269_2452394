@@ -10,7 +10,16 @@
 
 #include "main.h"
 
-#define BUTTONS_COUNT 4
+#define BUTTONS_COUNT 5
+
+enum ButtonIndex
+{
+    BTN_INDEX_1 = 0,
+    BTN_INDEX_2,
+    BTN_INDEX_3,
+    BTN_INDEX_4,
+    BTN_INDEX_USER
+};
 
 void button_init();
 void button_read();

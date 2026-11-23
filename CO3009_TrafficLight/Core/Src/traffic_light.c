@@ -7,6 +7,9 @@
 
 #include "traffic_light.h"
 
+static uint8_t toggle_state_road1 = 0;
+static uint8_t toggle_state_road2 = 0;
+
 static void traffic_write(uint8_t roadNum, uint8_t signalAB)
 {
 	uint8_t signalA = signalAB / 10;
@@ -50,4 +53,23 @@ void traffic_set(uint8_t roadNum, LightState color)
 			traffic_write(roadNum, 11);
 			break;
 	}
+}
+
+void traffic_toggle(uint8_t roadNum, LightState color)
+{
+    if (roadNum == 1)
+    {
+        toggle_state_road1 = !toggle_state_road1;
+        traffic_set(1, toggle_state_road1 ? color : LIGHT_OFF);
+    }
+    else if (roadNum == 2)
+    {
+        toggle_state_road2 = !toggle_state_road2;
+        traffic_set(2, toggle_state_road2 ? color : LIGHT_OFF);
+    }
+}
+void traffic_off_all(void)
+{
+    traffic_set(1, LIGHT_OFF);
+    traffic_set(2, LIGHT_OFF);
 }

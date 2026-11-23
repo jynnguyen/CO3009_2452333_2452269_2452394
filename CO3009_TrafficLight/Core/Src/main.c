@@ -23,6 +23,16 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "test_functions.h"
+#include "scheduler.h"
+#include "global.h"
+#include "software_timer.h"
+#include "button.h"
+#include "traffic_light.h"
+#include "dht20.h"
+#include "lcd.h"
+#include "fsm_automatic.h"
+#include "fsm_manual.h"
+#include "fsm_tuning.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,7 +107,23 @@ int main(void)
   MX_TIM2_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  test_i2c();
+//  test_i2c();
+	SCH_Init();
+	button_init();
+	traffic_init();
+	dht20_init();
+	lcd_init();
+	fsm_automatic_init();
+	fsm_manual_init();
+	fsm_tuning_init();
+	SCH_Add_Task(button_read, 0, 1);
+	SCH_Add_Task(timer_run, 0, 1);
+	SCH_Add_Task(fsm_automatic_run, 0, 5);
+	SCH_Add_Task(fsm_manual_run, 0, 5);
+	SCH_Add_Task(fsm_tuning_run, 0, 5);
+	SCH_Add_Task(lcd_display_task, 0, 20);
+	SCH_Add_Task(dht20_task, 0, 100);
+	HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,10 +131,10 @@ int main(void)
 
   while (1)
   {
-	  test_blink();
+	  // test_blink();
 	  // test_signal_combinations();
 	  // test_buttons();
-
+	  SCH_Dispatch_Tasks();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -331,7 +357,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM2)
+    {
+        SCH_Update();
+    }
+}
 /* USER CODE END 4 */
 
 /**

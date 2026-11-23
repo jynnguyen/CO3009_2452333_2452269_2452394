@@ -8,12 +8,77 @@
 #ifndef INC_GLOBAL_H_
 #define INC_GLOBAL_H_
 
+#include <stdint.h>
+
 typedef enum
 {
-    LIGHT_OFF,		   // (0, 0)
-    LIGHT_AMBER,		// (0, 1)
-    LIGHT_GREEN,		// (1, 0)
-	LIGHT_RED			    // (1, 1)
+    LIGHT_OFF = 0,
+    LIGHT_AMBER,
+    LIGHT_GREEN,
+    LIGHT_RED
 } LightState;
+
+typedef enum
+{
+    MODE_AUTO = 0,
+    MODE_MANUAL,
+    MODE_TUNING
+} SystemMode;
+
+typedef enum
+{
+    TUNE_RED = 0,
+    TUNE_AMBER,
+    TUNE_GREEN
+} TuningSelect;
+
+typedef enum
+{
+    NOTIF_NONE = 0,
+    NOTIF_SAVED,
+    NOTIF_SYNCED
+} SaveNotification;
+
+typedef enum
+{
+    AUTO_INIT = 0,
+    AUTO_RED1_GREEN2,
+    AUTO_RED1_AMBER2,
+    AUTO_GREEN1_RED2,
+    AUTO_AMBER1_RED2
+} AutoState;
+
+typedef enum
+{
+    MAN_INIT = 0,
+    MAN_RED1_GREEN2,
+    MAN_RED1_AMBER2,
+    MAN_GREEN1_RED2,
+    MAN_AMBER1_RED2
+} ManualState;
+
+extern SystemMode system_mode;
+extern AutoState auto_state;
+extern ManualState manual_state;
+extern TuningSelect tuning_select;
+extern SaveNotification save_notification;
+
+extern LightState road1_color;
+extern LightState road2_color;
+
+extern uint8_t time_red;
+extern uint8_t time_amber;
+extern uint8_t time_green;
+
+extern uint8_t temp_red;
+extern uint8_t temp_amber;
+extern uint8_t temp_green;
+
+extern uint8_t countdown_road1;
+extern uint8_t countdown_road2;
+
+extern float dht20_temperature;
+extern float dht20_humidity;
+extern uint8_t dht20_read_success;
 
 #endif /* INC_GLOBAL_H_ */

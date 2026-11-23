@@ -10,17 +10,30 @@
 #define BUTTON_PRESSED  GPIO_PIN_RESET
 #define BUTTON_RELEASED GPIO_PIN_SET
 
-static GPIO_TypeDef* btn_ports[BUTTONS_COUNT] = {BTN_1_GPIO_Port, BTN_2_GPIO_Port, BTN_3_GPIO_Port, BTN_4_GPIO_Port};
-static uint16_t btn_pins[BUTTONS_COUNT] = {BTN_1_Pin, BTN_2_Pin, BTN_3_Pin, BTN_4_Pin};
+static GPIO_TypeDef* btn_ports[BUTTONS_COUNT] = {
+    BTN_1_GPIO_Port,
+    BTN_2_GPIO_Port,
+    BTN_3_GPIO_Port,
+    BTN_4_GPIO_Port,
+    B1_GPIO_Port
+};
+
+static uint16_t btn_pins[BUTTONS_COUNT] = {
+    BTN_1_Pin,
+    BTN_2_Pin,
+    BTN_3_Pin,
+    BTN_4_Pin,
+    B1_Pin
+};
 
 static GPIO_PinState btn_reg0[BUTTONS_COUNT];
 static GPIO_PinState btn_reg1[BUTTONS_COUNT];
 static GPIO_PinState btn_reg2[BUTTONS_COUNT];
 static GPIO_PinState btn_reg3[BUTTONS_COUNT];
 
-static uint8_t btn_pressed_flag[BUTTONS_COUNT] = {};
-static uint8_t btn_held_flag[BUTTONS_COUNT] = {};
-static uint16_t btn_held_time[BUTTONS_COUNT] = {};
+static uint8_t btn_pressed_flag[BUTTONS_COUNT] = {0};
+static uint8_t btn_held_flag[BUTTONS_COUNT] = {0};
+static uint16_t btn_held_time[BUTTONS_COUNT] = {0};
 
 static void button_update_reg(uint8_t btnId)
 {
@@ -29,7 +42,7 @@ static void button_update_reg(uint8_t btnId)
 	btn_reg2[btnId] = HAL_GPIO_ReadPin(btn_ports[btnId], btn_pins[btnId]);
 }
 
-void button_init()
+void button_init(void)
 {
 	 for (uint8_t i = 0; i < BUTTONS_COUNT; i++)
 	 {
@@ -43,9 +56,9 @@ void button_init()
 	}
 }
 
-void button_read()
+void button_read(void)
 {
-	for(uint8_t i = 0;i < BUTTONS_COUNT; i++)
+	for(uint8_t i = 0; i < BUTTONS_COUNT; i++)
 	{
 		button_update_reg(i);
 
@@ -60,7 +73,6 @@ void button_read()
 					btn_held_time[i] = 0;
 				}
 			}
-
 			else if(btn_reg3[i] == BUTTON_PRESSED)
 			{
 				btn_held_time[i]++;
@@ -83,19 +95,17 @@ uint8_t button_is_pressed(uint8_t btnId)
 		btn_pressed_flag[btnId] = 0;
 		return 1;
 	}
-
 	return 0;
 }
 
 uint8_t button_is_held(uint8_t btnId)
 {
 	if (btnId >= BUTTONS_COUNT)
-			return 0;
+		return 0;
 	if (btn_held_flag[btnId] == 1)
 	{
 		btn_held_flag[btnId] = 0;
 		return 1;
 	}
-
 	return 0;
 }

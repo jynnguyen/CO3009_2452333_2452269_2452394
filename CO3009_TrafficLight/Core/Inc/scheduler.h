@@ -7,6 +7,7 @@
 
 #ifndef INC_SCHEDULER_H_
 #define INC_SCHEDULER_H_
+#include <stdint.h>
 
 #define SCH_MAX_TASKS 40
 #define NO_TASK_ID 0u

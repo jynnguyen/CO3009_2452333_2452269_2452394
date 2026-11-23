@@ -14,5 +14,7 @@
 
 void traffic_init();
 void traffic_set(uint8_t roadNum, LightState color);
+void traffic_toggle(uint8_t roadNum, LightState color);
+void traffic_off_all(void);
 
 #endif /* INC_TRAFFIC_LIGHT_H_ */
