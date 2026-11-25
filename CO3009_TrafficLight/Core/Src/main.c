@@ -124,6 +124,11 @@ int main(void)
 	SCH_Add_Task(lcd_display_task, 0, 20);
 	SCH_Add_Task(dht20_task, 0, 100);
 	HAL_TIM_Base_Start_IT(&htim2);
+	void one_shot_task(void)
+	{
+	    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	}
+	SCH_Add_Task(one_shot_task, 300, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -132,7 +137,7 @@ int main(void)
   while (1)
   {
 	  // test_blink();
-	  // test_signal_combinations();
+	  //test_signal_combinations();
 	  // test_buttons();
 	  SCH_Dispatch_Tasks();
 	  // test_i2c();
