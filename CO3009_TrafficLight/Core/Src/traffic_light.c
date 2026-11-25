@@ -35,6 +35,14 @@ void traffic_init()
 
 void traffic_set(uint8_t roadNum, LightState color)
 {
+	if (roadNum == 1)
+	{
+		road1_color = color;
+	}
+	else if (roadNum == 2)
+	{
+		road2_color = color;
+	}
 	switch(color)
 	{
 		case LIGHT_OFF:

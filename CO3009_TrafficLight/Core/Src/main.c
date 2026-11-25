@@ -135,6 +135,7 @@ int main(void)
 	  // test_signal_combinations();
 	  // test_buttons();
 	  SCH_Dispatch_Tasks();
+	  // test_i2c();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

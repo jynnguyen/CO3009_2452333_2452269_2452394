@@ -79,7 +79,7 @@ void button_read(void)
 				if(btn_held_time[i] >= 100)
 				{
 					btn_held_flag[i] = 1;
-					btn_held_time[i] -= 50;
+					btn_held_time[i] -= 20;
 				}
 			}
 		}

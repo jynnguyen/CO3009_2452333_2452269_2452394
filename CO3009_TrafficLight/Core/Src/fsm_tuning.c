@@ -66,7 +66,7 @@ void fsm_tuning_run(void)
 
         if (tuning_select == TUNE_RED)
         {
-            if (temp_red < 99) temp_red++; else temp_red = 1;
+            if (temp_red < 99) temp_red++; else temp_red = 2;
         }
         else if (tuning_select == TUNE_AMBER)
         {
@@ -84,15 +84,15 @@ void fsm_tuning_run(void)
 
         if (tuning_select == TUNE_RED)
         {
-            if (temp_red > 1) temp_red--;
+            if (temp_red > 2) temp_red--; else temp_red = 99;
         }
         else if (tuning_select == TUNE_AMBER)
         {
-            if (temp_amber > 1) temp_amber--;
+            if (temp_amber > 1) temp_amber--; else temp_amber = 99;
         }
         else if (tuning_select == TUNE_GREEN)
         {
-            if (temp_green > 1) temp_green--;
+            if (temp_green > 1) temp_green--; else temp_green = 99;
         }
     }
 
@@ -102,11 +102,30 @@ void fsm_tuning_run(void)
         {
             save_notification = NOTIF_SAVED;
         }
+        else if(tuning_select == TUNE_RED)
+        {
+
+        	if(temp_red - temp_amber >= 1)
+        		temp_green = temp_red - temp_amber;
+        	else
+        	{
+        		temp_green = 1;
+        		temp_amber = temp_red - temp_green;
+        	}
+        	save_notification = NOTIF_SYNCED;
+        }
+        else if(tuning_select == TUNE_AMBER || tuning_select == TUNE_GREEN)
+        {
+        	temp_red = temp_amber + temp_green;
+        	save_notification = NOTIF_SYNCED;
+        }
         else
         {
             temp_red = temp_amber + temp_green;
             save_notification = NOTIF_SYNCED;
         }
+
+
 
         time_red = temp_red;
         time_amber = temp_amber;

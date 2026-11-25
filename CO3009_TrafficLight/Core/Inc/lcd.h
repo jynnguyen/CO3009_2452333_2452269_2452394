@@ -11,7 +11,7 @@
 #include "main.h"
 #include "global.h"
 
-#define LCD_I2C_ADDR    (0x27 << 1)
+#define LCD_I2C_ADDR    (0x21 << 1)
 
 void lcd_init(void);
 void lcd_clear(void);
